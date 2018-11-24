@@ -10,6 +10,7 @@ class ScopedMouse {
   ScopedMouse(Mouse* mouse) : mouse_(mouse) {}
   ~ScopedMouse();
 
+  std::pair<int, int> GetCursorPos() { return mouse_->GetCursorPos(); }
   void SetCursorPos(int x, int y) { mouse_->SetCursorPos(x, y); }
   ScopedDestructor GetMousePressToken(Mouse::Button button);
 

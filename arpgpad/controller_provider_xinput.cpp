@@ -80,10 +80,10 @@ Controller::State XInputStateToState(const XINPUT_STATE& xinput) {
     return (magnitude_no_deadzone * sign) / no_deadzone_range;
   };
 
-  state.lstick.set_x(pad_value_to_float(gamepad.sThumbLX));
-  state.lstick.set_y(pad_value_to_float(gamepad.sThumbLY));
-  state.rstick.set_x(pad_value_to_float(gamepad.sThumbRX));
-  state.rstick.set_y(pad_value_to_float(gamepad.sThumbRY));
+  state.lstick.x() = pad_value_to_float(gamepad.sThumbLX);
+  state.lstick.y() = pad_value_to_float(gamepad.sThumbLY);
+  state.rstick.x() = pad_value_to_float(gamepad.sThumbRX);
+  state.rstick.y() = pad_value_to_float(gamepad.sThumbRY);
 
   return state;
 }

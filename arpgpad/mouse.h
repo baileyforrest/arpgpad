@@ -20,7 +20,9 @@ class Mouse {
 
   static const char* ButtonString(Button button);
 
+  virtual std::pair<int, int> GetCursorPos() = 0;
   virtual void SetCursorPos(int x, int y) = 0;
+
   virtual void PressButton(Button button) = 0;
   virtual void ReleaseButton(Button button) = 0;
 };

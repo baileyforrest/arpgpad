@@ -36,6 +36,16 @@ void SendInputKeyboardMouse::NotifyKeyRelease(KeyCode code) {
   SendInput(1, &input, sizeof(input));
 }
 
+std::pair<int, int> SendInputKeyboardMouse::GetCursorPos() {
+  POINT point;
+  if (!::GetCursorPos(&point)) {
+    LOG(ERR) << "Failed to get cursor position: " << GetLastError();
+    return {0, 0};
+  }
+
+  return std::pair<int, int>(point.x, point.y);
+}
+
 void SendInputKeyboardMouse::SetCursorPos(int x, int y) {
   LOG(INFO) << __func__ << "(" << x << ", " << y << ")";
   INPUT input{};

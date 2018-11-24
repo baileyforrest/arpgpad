@@ -18,11 +18,17 @@ class Vec2 {
 
   Vec2<T> Scale(T scale) const { return Vec2(x_ * scale, y_ * scale); }
 
-  T x() const { return x_; }
-  T y() const { return y_; }
+  Vec2<T>& operator+=(const Vec2<T>& other) {
+    x_ += other.x_;
+    y_ += other.y_;
+    return *this;
+  }
 
-  void set_x(T x) { x_ = x; }
-  void set_y(T y) { y_ = y; }
+  T x() const { return x_; }
+  T& x() { return x_; }
+
+  T y() const { return y_; }
+  T& y() { return y_; }
 
  private:
   T x_;

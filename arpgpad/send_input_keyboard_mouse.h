@@ -13,6 +13,7 @@ class SendInputKeyboardMouse : public Keyboard, public Mouse {
   void NotifyKeyRelease(KeyCode code) override;
 
   // Mouse implementation:
+  std::pair<int, int> GetCursorPos() override;
   void SetCursorPos(int x, int y) override;
   void PressButton(Button button) override;
   void ReleaseButton(Button button) override;
