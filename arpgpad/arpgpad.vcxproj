@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -154,9 +154,17 @@
     <ClInclude Include="controller.h" />
     <ClInclude Include="controller_provider.h" />
     <ClInclude Include="controller_provider_xinput.h" />
+    <ClInclude Include="action.h" />
+    <ClInclude Include="input_handler.h" />
+    <ClInclude Include="keyboard.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="logging_controller_delegate.h" />
+    <ClInclude Include="mouse.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="scoped_destructor.h" />
+    <ClInclude Include="scoped_keyboard.h" />
+    <ClInclude Include="scoped_mouse.h" />
+    <ClInclude Include="send_input_keyboard_mouse.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="vec2.h" />
@@ -165,8 +173,14 @@
     <ClCompile Include="arpgpad.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="controller_provider_xinput.cpp" />
+    <ClCompile Include="input_handler.cpp" />
+    <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="logging_controller_delegate.cpp" />
+    <ClCompile Include="mouse.cpp" />
+    <ClCompile Include="scoped_keyboard.cpp" />
+    <ClCompile Include="scoped_mouse.cpp" />
+    <ClCompile Include="send_input_keyboard_mouse.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
