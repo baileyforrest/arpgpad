@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include <iostream>
 #include <sstream>
 
@@ -12,26 +11,10 @@ class Logger {
     ERR,
   };
 
-  static const char* TypeString(Type type) {
-    switch (type) {
-      case Type::INFO:
-        return "INFO";
-      case Type::ERR:
-        return "ERR";
-    }
-    assert(false);
-    return "";
-  }
+  static const char* TypeString(Type type);
 
-  Logger(Type type, const char* file, int line) {
-    stream_ << "[" << file << ":" << line << "] " << TypeString(type) << ": ";
-  }
-  ~Logger() {
-    stream_ << "\n";
-    std::string str = stream_.str();
-    std::wstring wide_str(str.begin(), str.end());
-    OutputDebugString(wide_str.c_str());
-  }
+  Logger(Type type, const char* file, int line);
+  ~Logger();
 
   std::ostream& stream() { return stream_; }
 
