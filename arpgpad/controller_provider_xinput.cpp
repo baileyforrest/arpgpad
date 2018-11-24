@@ -97,6 +97,7 @@ class ControllerProviderXInput::ControllerImpl : public Controller {
 };
 
 ControllerProviderXInput::ControllerProviderXInput() { LoadControllers(); }
+
 ControllerProviderXInput::~ControllerProviderXInput() = default;
 
 std::vector<Controller*> ControllerProviderXInput::GetControllers() {

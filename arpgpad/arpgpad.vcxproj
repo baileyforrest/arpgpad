@@ -23,7 +23,7 @@
     <ProjectGuid>{DC20E64C-6741-4859-8F84-3EE49EBDB425}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>arpgpad</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
