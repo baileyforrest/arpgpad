@@ -40,21 +40,34 @@ const char* Controller::ButtonString(Button b) {
   return "";
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                          const Controller::State& state) {
+std::ostream& operator<<(std::ostream& stream, const Controller::State& state) {
   stream << "\n";
-  stream << "lstick: (" << state.lstick.y() << ", " << state.lstick.x() << ")\n";
-  stream << "rstick: (" << state.rstick.y() << ", " << state.rstick.x() << ")\n";
+  stream << "lstick: (" << state.lstick.y() << ", " << state.lstick.x()
+         << ")\n";
+  stream << "rstick: (" << state.rstick.y() << ", " << state.rstick.x()
+         << ")\n";
   stream << "ltrigger: " << state.ltrigger << "\n";
   stream << "rtrigger: " << state.rtrigger << "\n";
   stream << "buttons: (";
 
   for (int button = 1; button < Controller::kButtonMaxButton; button <<= 1) {
     if (state.buttons & button) {
-      stream << " " << Controller::ButtonString(static_cast<Controller::Button>(button));
+      stream << " "
+             << Controller::ButtonString(
+                    static_cast<Controller::Button>(button));
     }
   }
   stream << ")\n";
 
   return stream;
+}
+
+bool operator==(const Controller::State& lhs, const Controller::State& rhs) {
+  return lhs.lstick == rhs.lstick && lhs.rstick == rhs.rstick &&
+         lhs.ltrigger == rhs.ltrigger && lhs.rtrigger == rhs.rtrigger &&
+         lhs.buttons == rhs.buttons;
+}
+
+bool operator!=(const Controller::State& lhs, const Controller::State& rhs) {
+  return !(lhs == rhs);
 }

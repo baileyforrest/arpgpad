@@ -4,11 +4,14 @@
 
 #include "Xinput.h"
 
+#include <algorithm>
 #include <cassert>
 
 #include "log.h"
 
 namespace {
+
+constexpr float kDeadzone = 0.05f;
 
 Controller::State XInputStateToState(const XINPUT_STATE& xinput) {
   const XINPUT_GAMEPAD gamepad = xinput.Gamepad;
@@ -60,11 +63,27 @@ Controller::State XInputStateToState(const XINPUT_STATE& xinput) {
   state.ltrigger = gamepad.bLeftTrigger / 255.0f;
   state.rtrigger = gamepad.bRightTrigger / 255.0f;
 
-  static constexpr float kDivisor = 32768.0f;
-  state.lstick.set_x(gamepad.sThumbLX / kDivisor);
-  state.lstick.set_y(gamepad.sThumbLY / kDivisor);
-  state.rstick.set_x(gamepad.sThumbRX / kDivisor);
-  state.rstick.set_y(gamepad.sThumbRY / kDivisor);
+  // Normalize stick values and perform deadzone correction.
+  auto pad_value_to_float = [](SHORT value) -> float {
+    static constexpr float kDivisor = 32767.0f;
+    float normalized = std::max(-1.0f, value / kDivisor);
+
+    float norm_abs = std::abs(normalized);
+    if (norm_abs < kDeadzone) {
+      return 0.0;
+    }
+
+    float magnitude_no_deadzone = norm_abs - kDeadzone;
+    float sign = normalized / norm_abs;
+    float no_deadzone_range = 1.0f - kDeadzone;
+
+    return (magnitude_no_deadzone * sign) / no_deadzone_range;
+  };
+
+  state.lstick.set_x(pad_value_to_float(gamepad.sThumbLX));
+  state.lstick.set_y(pad_value_to_float(gamepad.sThumbLY));
+  state.rstick.set_x(pad_value_to_float(gamepad.sThumbRX));
+  state.rstick.set_y(pad_value_to_float(gamepad.sThumbRY));
 
   return state;
 }
@@ -80,8 +99,13 @@ class ControllerProviderXInput::ControllerImpl : public Controller {
   void SetDelegate(Delegate* delegate) override { delegate_ = delegate; }
 
   void NotifyStateChanged(const State& state, DWORD packet_number) {
-    state_ = state;
     packet_number_ = packet_number;
+
+    // This is possible with deadzone correction.
+    if (state == state_) {
+      return;
+    }
+    state_ = state;
     if (delegate_) {
       delegate_->OnStateChanged(state_);
     }

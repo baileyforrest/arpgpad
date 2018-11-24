@@ -38,6 +38,8 @@ class Controller {
 
   class Delegate {
    public:
+    // The implementation of Controller must correctly implement deadzone
+    // detection.
     virtual void OnStateChanged(const State& state) = 0;
 
    protected:
@@ -53,3 +55,5 @@ class Controller {
 };
 
 std::ostream& operator<<(std::ostream& stream, const Controller::State& state);
+bool operator==(const Controller::State& lhs, const Controller::State& rhs);
+bool operator!=(const Controller::State& lhs, const Controller::State& rhs);
