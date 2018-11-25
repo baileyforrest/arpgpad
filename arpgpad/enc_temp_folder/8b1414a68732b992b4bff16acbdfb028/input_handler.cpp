@@ -4,8 +4,8 @@
 #include <cassert>
 #include <cmath>
 
-#include "input_handler.h"
 #include "log.h"
+#include "input_handler.h"
 
 namespace {
 
@@ -25,7 +25,7 @@ InputHandler::InputHandler(Display* display, ScopedMouse* mouse,
       move_radius_(config.move_radius_fraction * display_->GetHeight()),
       middle_(display_->GetWidth() / 2.0f,
               display_->GetHeight() * config.middle_offset_fraction),
-      start_move_delay_(config.mouse_position_delay_ms) {
+  start_move_delay_(config.mouse_position_delay_ms) {
   assert(config.move_radius_fraction > 0.0f &&
          config.move_radius_fraction < 1.0f);
   assert(config.middle_offset_fraction > 0.0f &&
@@ -149,12 +149,9 @@ void InputHandler::HandleLStick(const Controller::State& state) {
 
   auto now = std::chrono::steady_clock::now();
   auto test = now + start_move_delay_;
-  LOG(ERR) << "FOO " << now.time_since_epoch().count() << " "
-           << test.time_since_epoch().count() << " "
-           << start_move_delay_.count();
+  LOG(ERR) << "FOO " << now.time_since_epoch().count() << " " << test.time_since_epoch().count() << " " << start_move_delay_.count();
 
-  pending_start_move_time_ =
-      std::chrono::steady_clock::now() + start_move_delay_;
+  pending_start_move_time_ = std::chrono::steady_clock::now() + start_move_delay_;
 }
 
 void InputHandler::HandleRStick(const Controller::State& state) {

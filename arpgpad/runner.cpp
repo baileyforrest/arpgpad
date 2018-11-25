@@ -10,6 +10,7 @@ Config PathOfExileConfig() {
   Config config;
   config.move_radius_fraction = 0.15f;
   config.middle_offset_fraction = 0.44f;
+  config.mouse_position_delay_ms = 10;
 
   using BA = Config::ButtonAction;
 

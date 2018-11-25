@@ -15,6 +15,9 @@ struct Config {
   // the screen. 0: top of screen, 1: Buttom of screen.
   float middle_offset_fraction = 0.0;
 
+  // Time to wait before performing actions based on mouse position.
+  int mouse_position_delay_ms = 0;
+
   struct ButtonAction {
     static ButtonAction KeyAction(Keyboard::KeyCode key_code,
                                   bool no_move = false, float distance = 0.0f);

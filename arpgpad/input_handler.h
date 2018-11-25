@@ -42,6 +42,10 @@ class InputHandler : public Controller::Delegate {
   const float move_radius_;
   const FloatVec2 middle_;
 
+  // The game may use a delayed or average mouse position. So when we want to
+  // start to moving, we need to wait some time before clicking the button.
+  const std::chrono::milliseconds start_move_delay_;
+
   // Last time |Poll| was called.
   SteadyTimePoint last_poll_time_;
 
@@ -52,9 +56,13 @@ class InputHandler : public Controller::Delegate {
   std::map<Controller::Button, ActionState> button_to_action_;
 
   bool is_moving_ = false;
+
   int move_override_count_ = 0;
 
   std::optional<ScopedDestructor> left_mouse_click_token_;
+
+  // Used for delayed movement start. See |start_move_delay_|.
+  std::optional<SteadyTimePoint> pending_start_move_time_;
 
   // Direction character is facing.
   FloatVec2 direction_;
