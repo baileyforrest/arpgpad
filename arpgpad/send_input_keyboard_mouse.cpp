@@ -5,13 +5,15 @@
 #include "log.h"
 
 // Used for debugging without actually sending input.
-#if 1
-#define SendInput(a0, a1, a2) \
-  do {                        \
-    (void)a0;                 \
-    (void)a1;                 \
-    (void)a2;                 \
+#if 0
+#define SendInputImpl(a0, a1, a2) \
+  do {                            \
+    (void)a0;                     \
+    (void)a1;                     \
+    (void)a2;                     \
   } while (0)
+#else
+#define SendInputImpl(a0, a1, a2) SendInput(a0, a1, a2)
 #endif
 
 SendInputKeyboardMouse::SendInputKeyboardMouse() = default;
@@ -23,7 +25,7 @@ void SendInputKeyboardMouse::NotifyKeyPress(KeyCode code) {
   input.type = INPUT_KEYBOARD;
 
   input.ki.wVk = code;
-  SendInput(1, &input, sizeof(input));
+  SendInputImpl(1, &input, sizeof(input));
 }
 
 void SendInputKeyboardMouse::NotifyKeyRelease(KeyCode code) {
@@ -33,7 +35,7 @@ void SendInputKeyboardMouse::NotifyKeyRelease(KeyCode code) {
 
   input.ki.wVk = code;
   input.ki.dwFlags = KEYEVENTF_KEYUP;
-  SendInput(1, &input, sizeof(input));
+  SendInputImpl(1, &input, sizeof(input));
 }
 
 std::pair<int, int> SendInputKeyboardMouse::GetCursorPos() {
@@ -48,13 +50,9 @@ std::pair<int, int> SendInputKeyboardMouse::GetCursorPos() {
 
 void SendInputKeyboardMouse::SetCursorPos(int x, int y) {
   LOG(INFO) << __func__ << "(" << x << ", " << y << ")";
-  INPUT input{};
-  input.type = INPUT_MOUSE;
-
-  input.mi.dx = x;
-  input.mi.dy = y;
-  input.mi.dwFlags = MOUSEEVENTF_ABSOLUTE;
-  SendInput(1, &input, sizeof(input));
+  if (!::SetCursorPos(x, y)) {
+    LOG(ERR) << __func__ << " failed: " << GetLastError();
+  }
 }
 
 void SendInputKeyboardMouse::PressButton(Button button) {
@@ -79,7 +77,7 @@ void SendInputKeyboardMouse::PressButton(Button button) {
       input.mi.mouseData = button - kButtonXStart + 1;
       break;
   }
-  SendInput(1, &input, sizeof(input));
+  SendInputImpl(1, &input, sizeof(input));
 }
 
 void SendInputKeyboardMouse::ReleaseButton(Button button) {
@@ -103,5 +101,5 @@ void SendInputKeyboardMouse::ReleaseButton(Button button) {
       input.mi.mouseData = button - kButtonXStart + 1;
       break;
   }
-  SendInput(1, &input, sizeof(input));
+  SendInputImpl(1, &input, sizeof(input));
 }

@@ -15,12 +15,15 @@ constexpr float kTriggerThreshold = 0.10f;
 
 }  // namespace
 
-InputHandler::InputHandler(Keyboard* keyboard, Mouse* mouse, float move_radius,
-                           float middle_offset)
-    : move_radius_(move_radius),
-      middle_(screen_width_ / 2.0f, screen_height_ * middle_offset),
+InputHandler::InputHandler(Keyboard* keyboard, Mouse* mouse,
+                           const Params& params)
+    : move_radius_(params.move_radius),
+      middle_(screen_width_ / 2.0f, screen_height_ * params.middle_offset),
       keyboard_(keyboard),
-      mouse_(mouse) {}
+      mouse_(mouse) {
+  assert(params.move_radius > 0.0f);
+  assert(params.middle_offset > 0.0f && params.middle_offset < 1.0f);
+}
 InputHandler::~InputHandler() = default;
 
 void InputHandler::Poll() {
@@ -123,6 +126,9 @@ void InputHandler::HandleLStick(const Controller::State& state) {
   is_moving_ = true;
 
   direction_ = lstick.Normal();
+
+  // Swap direction because screen coordinates are reversed.
+  direction_.y() *= -1.0f;
   RefreshMoveMousePosition();
   if (move_override_count_ == 0 && !left_mouse_click_token_) {
     left_mouse_click_token_.emplace(
@@ -134,7 +140,7 @@ void InputHandler::HandleRStick(const Controller::State& state) {
   const FloatVec2& rstick = state.rstick;
   float magnitude = rstick.Magnitude();
   if (magnitude < kRStickThreshold) {
-    cursor_mouse_position_ = FloatVec2();
+    cursor_mouse_velocity_ = FloatVec2();
     return;
   }
 
@@ -143,13 +149,16 @@ void InputHandler::HandleRStick(const Controller::State& state) {
   // Left trigger controls cursor speed.
   if (state.ltrigger > kTriggerThreshold) {
     // TODO: Should be configurable.
-    velocity *= screen_height_ / 50.0f;
+    velocity *= screen_height_ * 2.0f;
   } else {
     // TODO: Should be configurable.
-    velocity *= screen_height_ / 200.0f;
+    velocity *= screen_height_ * 1.0f;
   }
 
   cursor_mouse_velocity_ = rstick.Normal().Scale(velocity);
+
+  // Swap direction because screen coordinates are reversed.
+  cursor_mouse_velocity_.y() *= -1.0f;
 }
 
 void InputHandler::RefreshMoveMousePosition() {
@@ -160,7 +169,7 @@ void InputHandler::RefreshMoveMousePosition() {
   // Apply perspective. This is needed so the distance from the character in
   // game is normalized.
   // TODO: Pass this into the class. See if we can use one value.
-  FloatVec2 perspective_direction = direction_;
+  FloatVec2 perspective_direction = direction_.Scale(radius);
   if (perspective_direction.y() < 0) {
     perspective_direction.y() *= 0.8f;
   } else {
@@ -179,6 +188,10 @@ void InputHandler::RefreshCursorMousePosition(SteadyTimePoint now) {
     return;
   }
 
+  if (cursor_mouse_velocity_ == FloatVec2(0, 0)) {
+    return;
+  }
+
   std::pair<int, int> mouse_pos_int = mouse_.GetCursorPos();
   // If mouse moved from our cached state, just reset the cache.
   if (static_cast<int>(cursor_mouse_position_.x()) != mouse_pos_int.first ||
@@ -189,8 +202,11 @@ void InputHandler::RefreshCursorMousePosition(SteadyTimePoint now) {
   }
 
   auto time_elapsed = now - last_poll_time_;
+  float scale = static_cast<float>(
+      std::chrono::duration<double>(time_elapsed) /
+      std::chrono::duration<double>(std::chrono::seconds(1)));
 
-  cursor_mouse_position_ += cursor_mouse_velocity_;
+  cursor_mouse_position_ += cursor_mouse_velocity_.Scale(scale);
 
   // Make sure position is in bounds.
   cursor_mouse_position_.x() =
@@ -200,6 +216,13 @@ void InputHandler::RefreshCursorMousePosition(SteadyTimePoint now) {
       std::min(std::max(cursor_mouse_position_.y(), 0.0f),
                static_cast<float>(screen_height_ - 1));
 
-  mouse_.SetCursorPos(static_cast<int>(cursor_mouse_position_.x()),
-                      static_cast<int>(cursor_mouse_position_.y()));
+  int new_x = static_cast<int>(cursor_mouse_position_.x());
+  int new_y = static_cast<int>(cursor_mouse_position_.y());
+
+  // Don't update position if it didn't actually change.
+  if (mouse_pos_int.first == new_x && mouse_pos_int.second == new_y) {
+    return;
+  }
+
+  mouse_.SetCursorPos(new_x, new_y);
 }

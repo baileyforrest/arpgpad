@@ -4,6 +4,8 @@
 
 #include <cassert>
 
+#include "log.h"
+
 ScopedMouse::~ScopedMouse() { assert(button_to_press_count_.empty()); }
 
 ScopedDestructor ScopedMouse::GetMousePressToken(Mouse::Button button) {

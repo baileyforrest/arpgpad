@@ -13,8 +13,11 @@
 
 class InputHandler : public Controller::Delegate {
  public:
-  InputHandler(Keyboard* keyboard, Mouse* mouse, float mouse_radius,
-               float middle_offset);
+  struct Params {
+    float move_radius = 0;
+    float middle_offset = 0;
+  };
+  InputHandler(Keyboard* keyboard, Mouse* mouse, const Params& params);
   ~InputHandler();
 
   void Poll();
