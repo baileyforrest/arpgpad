@@ -26,8 +26,8 @@ void PressButtonAction::OnActivated() {
     shift_key_token_.emplace(keyboard_->GetKeyPressToken(VK_LSHIFT));
   }
   if (distance_ != 0.0) {
-    move_radius_override_token_.emplace(
-        input_handler_->OverrideMoveRadius(distance_));
+    move_radius_override_token_.emplace(input_handler_->OverrideMoveRadius(
+        distance_ * input_handler_->display()->GetHeight()));
   }
   press_token_.emplace(press_button_impl_());
 }

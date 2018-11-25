@@ -158,6 +158,7 @@
     <ClInclude Include="controller_provider.h" />
     <ClInclude Include="controller_provider_xinput.h" />
     <ClInclude Include="action.h" />
+    <ClInclude Include="display.h" />
     <ClInclude Include="input_handler.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="log.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="config.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="controller_provider_xinput.cpp" />
+    <ClCompile Include="display.cpp" />
     <ClCompile Include="input_handler.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="log.cpp" />

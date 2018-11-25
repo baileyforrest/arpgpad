@@ -32,14 +32,19 @@ Config PathOfExileConfig() {
   config.button_to_action.emplace(Controller::kButtonA,
                                   BA::MouseAction(Mouse::kButtonRight));
   config.button_to_action.emplace(Controller::kButtonX,
-                                  BA::MouseAction(Mouse::kButtonMiddle));
+                                  BA::MouseAction(Mouse::kButtonMiddle, true));
 
   // QWERT
   config.button_to_action.emplace(Controller::kButtonStart, BA::KeyAction('Q'));
   config.button_to_action.emplace(Controller::kButtonLb, BA::KeyAction('W'));
   config.button_to_action.emplace(Controller::kButtonRb, BA::KeyAction('E'));
-  config.button_to_action.emplace(Controller::kButtonB, BA::KeyAction('R'));
-  config.button_to_action.emplace(Controller::kButtonY, BA::KeyAction('T'));
+
+  // I have RT mapped to mouse forward/back buttons.
+  config.button_to_action.emplace(
+      Controller::kButtonY, BA::MouseAction(Mouse::kButtonX2));  // Forward
+  config.button_to_action.emplace(
+      Controller::kButtonB,
+      BA::MouseAction(Mouse::kButtonX1, false, 0.3f));  // Back
 
   return config;
 }
@@ -61,7 +66,7 @@ bool Runner::Init() {
 
   config_ = PathOfExileConfig();
 
-  input_handler_.emplace(&mouse_, *config_);
+  input_handler_.emplace(&display_, &mouse_, *config_);
   controllers[0]->SetDelegate(&input_handler_.value());
 
   for (const auto& item : config_->button_to_action) {

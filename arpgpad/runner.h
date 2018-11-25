@@ -3,6 +3,7 @@
 #include "action.h"
 #include "config.h"
 #include "controller_provider_xinput.h"
+#include "display.h"
 #include "input_handler.h"
 #include "log.h"
 #include "logging_controller_delegate.h"
@@ -19,6 +20,7 @@ class Runner {
   void Poll();
 
  private:
+  Display display_;
   ControllerProviderXInput controller_provider_xinput_;
   SendInputKeyboardMouse keyboard_and_mouse_;
   ScopedKeyboard keyboard_;

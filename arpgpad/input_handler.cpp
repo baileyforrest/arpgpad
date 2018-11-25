@@ -17,11 +17,13 @@ constexpr float kCursorMoveSpeedFastMult = 2.0f;
 
 }  // namespace
 
-InputHandler::InputHandler(ScopedMouse* mouse, const Config& config)
-    : move_radius_(config.move_radius_fraction),
-      middle_(screen_width_ / 2.0f,
-              screen_height_ * config.middle_offset_fraction),
-      mouse_(mouse) {
+InputHandler::InputHandler(Display* display, ScopedMouse* mouse,
+                           const Config& config)
+    : mouse_(mouse),
+      display_(display),
+      move_radius_(config.move_radius_fraction * display_->GetHeight()),
+      middle_(display_->GetWidth() / 2.0f,
+              display_->GetHeight() * config.middle_offset_fraction) {
   assert(config.move_radius_fraction > 0.0f &&
          config.move_radius_fraction < 1.0f);
   assert(config.middle_offset_fraction > 0.0f &&
@@ -153,7 +155,7 @@ void InputHandler::HandleRStick(const Controller::State& state) {
   float multiplier = state.ltrigger > kTriggerThreshold
                          ? kCursorMoveSpeedFastMult
                          : kCursorMoveSpeedSlowMult;
-  velocity *= screen_height_ * multiplier;
+  velocity *= display_->GetHeight() * multiplier;
 
   cursor_mouse_velocity_ = rstick.Normal().Scale(velocity);
 
@@ -211,10 +213,10 @@ void InputHandler::RefreshCursorMousePosition(SteadyTimePoint now) {
   // Make sure position is in bounds.
   cursor_mouse_position_.x() =
       std::min(std::max(cursor_mouse_position_.x(), 0.0f),
-               static_cast<float>(screen_width_ - 1));
+               static_cast<float>(display_->GetWidth() - 1));
   cursor_mouse_position_.y() =
       std::min(std::max(cursor_mouse_position_.y(), 0.0f),
-               static_cast<float>(screen_height_ - 1));
+               static_cast<float>(display_->GetHeight() - 1));
 
   int new_x = static_cast<int>(cursor_mouse_position_.x());
   int new_y = static_cast<int>(cursor_mouse_position_.y());

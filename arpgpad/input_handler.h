@@ -8,13 +8,14 @@
 #include "action.h"
 #include "config.h"
 #include "controller.h"
+#include "display.h"
 #include "scoped_keyboard.h"
 #include "scoped_mouse.h"
 #include "vec2.h"
 
 class InputHandler : public Controller::Delegate {
  public:
-  InputHandler(ScopedMouse* mouse, const Config& config);
+  InputHandler(Display* display, ScopedMouse* mouse, const Config& config);
   ~InputHandler();
 
   void Poll();
@@ -22,6 +23,8 @@ class InputHandler : public Controller::Delegate {
   void RegisterAction(Controller::Button button, Action* action);
   ScopedDestructor OverrideMoveRadius(float radius);
   ScopedDestructor OverrideMove();
+
+  Display* display() const { return display_; }
 
  private:
   using SteadyTimePoint = std::chrono::time_point<std::chrono::steady_clock>;
@@ -33,13 +36,11 @@ class InputHandler : public Controller::Delegate {
   void RefreshMoveMousePosition();
   void RefreshCursorMousePosition(SteadyTimePoint now);
 
-  // TODO: Don't hard code this.
-  const int screen_width_ = 2560;
-  const int screen_height_ = 1440;
+  Display* const display_;
+  ScopedMouse* const mouse_;
+
   const float move_radius_;
   const FloatVec2 middle_;
-
-  ScopedMouse* const mouse_;
 
   // Last time |Poll| was called.
   SteadyTimePoint last_poll_time_;
