@@ -23,7 +23,7 @@ class InputHandler : public Controller::Delegate {
   void Poll();
 
   void RegisterAction(Controller::Button button, Action* action);
-  ScopedDestructor OverrideRadius(float radius);
+  ScopedDestructor OverrideMoveRadius(float radius);
   ScopedDestructor OverrideMove();
 
  private:

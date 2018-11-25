@@ -152,7 +152,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="actions\press_button_action.h" />
-    <ClInclude Include="actions\press_button_no_move_action.h" />
     <ClInclude Include="arpgpad.h" />
     <ClInclude Include="controller.h" />
     <ClInclude Include="controller_provider.h" />
@@ -175,7 +174,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actions\press_button_action.cpp" />
-    <ClCompile Include="actions\press_button_no_move_action.cpp" />
     <ClCompile Include="arpgpad.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="controller_provider_xinput.cpp" />

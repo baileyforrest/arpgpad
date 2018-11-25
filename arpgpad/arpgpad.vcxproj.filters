@@ -81,9 +81,6 @@
     <ClInclude Include="actions\press_button_action.h">
       <Filter>Header Files\actions</Filter>
     </ClInclude>
-    <ClInclude Include="actions\press_button_no_move_action.h">
-      <Filter>Header Files\actions</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -126,9 +123,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="actions\press_button_action.cpp">
-      <Filter>Source Files\actions</Filter>
-    </ClCompile>
-    <ClCompile Include="actions\press_button_no_move_action.cpp">
       <Filter>Source Files\actions</Filter>
     </ClCompile>
   </ItemGroup>

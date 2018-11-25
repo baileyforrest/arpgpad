@@ -35,7 +35,7 @@ void InputHandler::RegisterAction(Controller::Button button, Action* action) {
   assert(ret.second);
 }
 
-ScopedDestructor InputHandler::OverrideRadius(float radius) {
+ScopedDestructor InputHandler::OverrideMoveRadius(float radius) {
   uint64_t id = next_radius_override_id_++;
   id_to_mouse_radius_override_.push_back(MouseRadiusOverride{id, radius});
   RefreshMoveMousePosition();
