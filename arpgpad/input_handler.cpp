@@ -19,13 +19,14 @@ constexpr float kCursorMoveSpeedFastMult = 2.0f;
 }  // namespace
 
 InputHandler::InputHandler(Display* display, ScopedMouse* mouse,
-                           const Config& config)
+                           const Config& config, MoveCommand move_command)
     : mouse_(mouse),
       display_(display),
       move_radius_(config.move_radius_fraction * display_->GetHeight()),
       middle_(display_->GetWidth() / 2.0f,
               display_->GetHeight() * config.middle_offset_fraction),
-      start_move_delay_(config.mouse_position_delay_ms) {
+      start_move_delay_(config.mouse_position_delay_ms),
+      move_command_(std::move(move_command)) {
   assert(config.move_radius_fraction > 0.0f &&
          config.move_radius_fraction < 1.0f);
   assert(config.middle_offset_fraction > 0.0f &&
@@ -38,9 +39,8 @@ void InputHandler::Poll() {
 
   if (pending_start_move_time_ && now > pending_start_move_time_) {
     pending_start_move_time_.reset();
-    if (is_moving_ && move_override_count_ == 0 && !left_mouse_click_token_) {
-      left_mouse_click_token_.emplace(
-          mouse_->GetMousePressToken(Mouse::kButtonLeft));
+    if (is_moving_ && move_override_count_ == 0 && !move_token_) {
+      move_token_.emplace(move_command_());
     }
   }
 
@@ -72,15 +72,14 @@ ScopedDestructor InputHandler::OverrideMoveRadius(float radius) {
 ScopedDestructor InputHandler::OverrideMove() {
   if (++move_override_count_ == 1) {
     if (is_moving_) {
-      left_mouse_click_token_.reset();
+      move_token_.reset();
     }
   }
 
   return ScopedDestructor([this] {
     if (--move_override_count_ == 0) {
       if (is_moving_) {
-        left_mouse_click_token_.emplace(
-            mouse_->GetMousePressToken(Mouse::kButtonLeft));
+        move_token_.emplace(move_command_());
       }
     }
   });
@@ -90,17 +89,17 @@ void InputHandler::OnStateChanged(const Controller::State& state) {
   HandleLStick(state);
   if (!is_moving_) {
     HandleRStick(state);
+  }
 
-    // Handle right trigger as 'left click'.
-    if (state.rtrigger >= kTriggerThreshold) {
-      if (!left_mouse_click_token_) {
-        left_mouse_click_token_.emplace(
-            mouse_->GetMousePressToken(Mouse::kButtonLeft));
-      }
-    } else {
-      if (left_mouse_click_token_) {
-        left_mouse_click_token_.reset();
-      }
+  // Handle right trigger as 'left click'.
+  if (state.rtrigger >= kTriggerThreshold) {
+    if (!cursor_mode_click_token_) {
+      cursor_mode_click_token_.emplace(
+          mouse_->GetMousePressToken(Mouse::kButtonLeft));
+    }
+  } else {
+    if (cursor_mode_click_token_) {
+      cursor_mode_click_token_.reset();
     }
   }
 
@@ -133,7 +132,7 @@ void InputHandler::HandleLStick(const Controller::State& state) {
   if (lstick.Magnitude() < kLStickThreshold) {
     if (is_moving_) {
       is_moving_ = false;
-      left_mouse_click_token_.reset();
+      move_token_.reset();
     }
 
     return;

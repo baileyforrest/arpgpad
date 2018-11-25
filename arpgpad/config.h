@@ -42,5 +42,6 @@ struct Config {
     float distance_fraction = 0.0f;
   };
 
+  ButtonAction move_command;
   std::map<Controller::Button, ButtonAction> button_to_action;
 };

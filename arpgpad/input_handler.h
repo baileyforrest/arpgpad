@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <deque>
+#include <functional>
 #include <map>
 #include <optional>
 
@@ -9,13 +10,17 @@
 #include "config.h"
 #include "controller.h"
 #include "display.h"
+#include "scoped_destructor.h"
 #include "scoped_keyboard.h"
 #include "scoped_mouse.h"
 #include "vec2.h"
 
 class InputHandler : public Controller::Delegate {
  public:
-  InputHandler(Display* display, ScopedMouse* mouse, const Config& config);
+  using MoveCommand = std::function<ScopedDestructor()>;
+
+  InputHandler(Display* display, ScopedMouse* mouse, const Config& config,
+               MoveCommand move_command);
   ~InputHandler();
 
   void Poll();
@@ -46,6 +51,8 @@ class InputHandler : public Controller::Delegate {
   // start to moving, we need to wait some time before clicking the button.
   const std::chrono::milliseconds start_move_delay_;
 
+  const MoveCommand move_command_;
+
   // Last time |Poll| was called.
   SteadyTimePoint last_poll_time_;
 
@@ -59,7 +66,8 @@ class InputHandler : public Controller::Delegate {
 
   int move_override_count_ = 0;
 
-  std::optional<ScopedDestructor> left_mouse_click_token_;
+  std::optional<ScopedDestructor> move_token_;
+  std::optional<ScopedDestructor> cursor_mode_click_token_;
 
   // Used for delayed movement start. See |start_move_delay_|.
   std::optional<SteadyTimePoint> pending_start_move_time_;

@@ -13,6 +13,7 @@ Config PathOfExileConfig() {
   config.mouse_position_delay_ms = 10;
 
   using BA = Config::ButtonAction;
+  config.move_command = BA::MouseAction(Mouse::kButtonLeft);
 
   config.button_to_action.emplace(Controller::kButtonBack,
                                   BA::KeyAction(VK_ESCAPE));
@@ -58,9 +59,12 @@ Config Diablo3Config() {
 
   using BA = Config::ButtonAction;
 
+  config.move_command = BA::KeyAction('5');
+
   config.button_to_action.emplace(Controller::kButtonBack,
                                   BA::KeyAction(VK_ESCAPE));
-  config.button_to_action.emplace(Controller::kButtonStart, BA::KeyAction(VK_TAB));
+  config.button_to_action.emplace(Controller::kButtonStart,
+                                  BA::KeyAction(VK_TAB));
 
   // Mouse
   config.button_to_action.emplace(Controller::kButtonA,
@@ -101,42 +105,40 @@ bool Runner::Init() {
 #else
   config_ = Diablo3Config();
 #endif
+  using ButtonAction = Config::ButtonAction;
 
-  input_handler_.emplace(&display_, &mouse_, *config_);
-  controllers[0]->SetDelegate(&input_handler_.value());
-
-  for (const auto& item : config_->button_to_action) {
-    using ButtonAction = Config::ButtonAction;
-
-    const ButtonAction& button_action = item.second;
-
-    std::unique_ptr<Action> action;
+  auto button_action_to_callback = [this](const ButtonAction& button_action)
+      -> std::function<ScopedDestructor()> {
     switch (button_action.type) {
       case ButtonAction::Type::kMouse: {
         Mouse::Button mouse_button = button_action.code.mouse_button;
-        action = std::make_unique<PressButtonAction>(
-            &input_handler_.value(), &keyboard_, *config_,
-            button_action.no_move, button_action.distance_fraction,
-            [this, mouse_button] {
-              return mouse_.GetMousePressToken(mouse_button);
-            });
-        break;
+        return [this, mouse_button] {
+          return mouse_.GetMousePressToken(mouse_button);
+        };
       }
       case ButtonAction::Type::kKeyboard: {
         Keyboard::KeyCode key_code = button_action.code.key_code;
-        action = std::make_unique<PressButtonAction>(
-            &input_handler_.value(), &keyboard_, *config_,
-            button_action.no_move, button_action.distance_fraction,
-            [this, key_code] { return keyboard_.GetKeyPressToken(key_code); });
-        break;
+        return
+            [this, key_code] { return keyboard_.GetKeyPressToken(key_code); };
       }
     }
 
-    assert(action);
+    assert(false);
+    return {};
+  };
 
-    Controller::Button button = item.first;
-    input_handler_->RegisterAction(button, action.get());
+  input_handler_.emplace(&display_, &mouse_, *config_,
+                         button_action_to_callback(config_->move_command));
+  controllers[0]->SetDelegate(&input_handler_.value());
 
+  for (const auto& item : config_->button_to_action) {
+    const ButtonAction& button_action = item.second;
+    auto action = std::make_unique<PressButtonAction>(
+        &input_handler_.value(), &keyboard_, *config_, button_action.no_move,
+        button_action.distance_fraction,
+        button_action_to_callback(button_action));
+
+    input_handler_->RegisterAction(item.first, action.get());
     actions_.push_back(std::move(action));
   }
 
