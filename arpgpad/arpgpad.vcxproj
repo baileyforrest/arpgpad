@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="actions\key_press.h" />
+    <ClInclude Include="actions\key_press_no_move.h" />
     <ClInclude Include="arpgpad.h" />
     <ClInclude Include="controller.h" />
     <ClInclude Include="controller_provider.h" />
@@ -174,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actions\key_press.cpp" />
+    <ClCompile Include="actions\key_press_no_move.cpp" />
     <ClCompile Include="arpgpad.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="controller_provider_xinput.cpp" />

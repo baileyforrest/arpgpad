@@ -12,7 +12,7 @@ class KeyPress : public Action {
   void OnActivated() override;
   void OnDeactivated() override;
 
- private:
+ protected:
   ScopedKeyboard* const keyboard_;
   const Keyboard::KeyCode key_code_;
 

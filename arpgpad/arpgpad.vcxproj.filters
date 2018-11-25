@@ -81,6 +81,9 @@
     <ClInclude Include="runner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="actions\key_press_no_move.h">
+      <Filter>Header Files\actions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -124,6 +127,9 @@
     </ClCompile>
     <ClCompile Include="runner.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="actions\key_press_no_move.cpp">
+      <Filter>Source Files\actions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
