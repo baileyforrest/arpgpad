@@ -17,7 +17,7 @@ class InputHandler : public Controller::Delegate {
     float move_radius = 0;
     float middle_offset = 0;
   };
-  InputHandler(Keyboard* keyboard, Mouse* mouse, const Params& params);
+  InputHandler(ScopedMouse* mouse, const Params& params);
   ~InputHandler();
 
   void Poll();
@@ -42,8 +42,7 @@ class InputHandler : public Controller::Delegate {
   const float move_radius_;
   const FloatVec2 middle_;
 
-  ScopedKeyboard keyboard_;
-  ScopedMouse mouse_;
+  ScopedMouse* const mouse_;
 
   // Last time |Poll| was called.
   SteadyTimePoint last_poll_time_;

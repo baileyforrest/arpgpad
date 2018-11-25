@@ -105,6 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="actions\key_press.h" />
     <ClInclude Include="arpgpad.h" />
     <ClInclude Include="controller.h" />
     <ClInclude Include="controller_provider.h" />
@@ -161,6 +163,7 @@
     <ClInclude Include="logging_controller_delegate.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="runner.h" />
     <ClInclude Include="scoped_destructor.h" />
     <ClInclude Include="scoped_keyboard.h" />
     <ClInclude Include="scoped_mouse.h" />
@@ -170,6 +173,7 @@
     <ClInclude Include="vec2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="actions\key_press.cpp" />
     <ClCompile Include="arpgpad.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="controller_provider_xinput.cpp" />
@@ -178,6 +182,7 @@
     <ClCompile Include="log.cpp" />
     <ClCompile Include="logging_controller_delegate.cpp" />
     <ClCompile Include="mouse.cpp" />
+    <ClCompile Include="runner.cpp" />
     <ClCompile Include="scoped_keyboard.cpp" />
     <ClCompile Include="scoped_mouse.cpp" />
     <ClCompile Include="send_input_keyboard_mouse.cpp" />

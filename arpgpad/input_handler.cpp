@@ -15,11 +15,9 @@ constexpr float kTriggerThreshold = 0.10f;
 
 }  // namespace
 
-InputHandler::InputHandler(Keyboard* keyboard, Mouse* mouse,
-                           const Params& params)
+InputHandler::InputHandler(ScopedMouse* mouse, const Params& params)
     : move_radius_(params.move_radius),
       middle_(screen_width_ / 2.0f, screen_height_ * params.middle_offset),
-      keyboard_(keyboard),
       mouse_(mouse) {
   assert(params.move_radius > 0.0f);
   assert(params.middle_offset > 0.0f && params.middle_offset < 1.0f);
@@ -64,7 +62,7 @@ ScopedDestructor InputHandler::OverrideMove() {
     if (--move_override_count_ == 0) {
       if (is_moving_) {
         left_mouse_click_token_.emplace(
-            mouse_.GetMousePressToken(Mouse::kButtonLeft));
+            mouse_->GetMousePressToken(Mouse::kButtonLeft));
       }
     }
   });
@@ -79,7 +77,7 @@ void InputHandler::OnStateChanged(const Controller::State& state) {
     if (state.rtrigger >= kTriggerThreshold) {
       if (!left_mouse_click_token_) {
         left_mouse_click_token_.emplace(
-            mouse_.GetMousePressToken(Mouse::kButtonLeft));
+            mouse_->GetMousePressToken(Mouse::kButtonLeft));
       }
     } else {
       if (left_mouse_click_token_) {
@@ -132,7 +130,7 @@ void InputHandler::HandleLStick(const Controller::State& state) {
   RefreshMoveMousePosition();
   if (move_override_count_ == 0 && !left_mouse_click_token_) {
     left_mouse_click_token_.emplace(
-        mouse_.GetMousePressToken(Mouse::kButtonLeft));
+        mouse_->GetMousePressToken(Mouse::kButtonLeft));
   }
 }
 
@@ -178,8 +176,8 @@ void InputHandler::RefreshMoveMousePosition() {
 
   FloatVec2 target = middle_ + perspective_direction;
 
-  mouse_.SetCursorPos(static_cast<int>(target.x()),
-                      static_cast<int>(target.y()));
+  mouse_->SetCursorPos(static_cast<int>(target.x()),
+                       static_cast<int>(target.y()));
 }
 
 void InputHandler::RefreshCursorMousePosition(SteadyTimePoint now) {
@@ -192,7 +190,7 @@ void InputHandler::RefreshCursorMousePosition(SteadyTimePoint now) {
     return;
   }
 
-  std::pair<int, int> mouse_pos_int = mouse_.GetCursorPos();
+  std::pair<int, int> mouse_pos_int = mouse_->GetCursorPos();
   // If mouse moved from our cached state, just reset the cache.
   if (static_cast<int>(cursor_mouse_position_.x()) != mouse_pos_int.first ||
       static_cast<int>(cursor_mouse_position_.y()) != mouse_pos_int.second) {
@@ -224,5 +222,5 @@ void InputHandler::RefreshCursorMousePosition(SteadyTimePoint now) {
     return;
   }
 
-  mouse_.SetCursorPos(new_x, new_y);
+  mouse_->SetCursorPos(new_x, new_y);
 }
