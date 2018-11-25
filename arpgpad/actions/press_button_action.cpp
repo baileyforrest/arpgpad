@@ -2,9 +2,10 @@
 
 #include "press_button_action.h"
 
-PressButtonAction::PressButtonAction(
-    InputHandler* input_handler, ScopedKeyboard* keyboard,
-    PressButtonImpl press_button_impl, bool no_move, float distance)
+PressButtonAction::PressButtonAction(InputHandler* input_handler,
+                                     ScopedKeyboard* keyboard, bool no_move,
+                                     float distance,
+                                     PressButtonImpl press_button_impl)
     : input_handler_(input_handler),
       keyboard_(keyboard),
       press_button_impl_(std::move(press_button_impl)),
@@ -25,7 +26,8 @@ void PressButtonAction::OnActivated() {
     shift_key_token_.emplace(keyboard_->GetKeyPressToken(VK_LSHIFT));
   }
   if (distance_ != 0.0) {
-    move_radius_override_token_.emplace(input_handler_->OverrideMoveRadius(distance_));
+    move_radius_override_token_.emplace(
+        input_handler_->OverrideMoveRadius(distance_));
   }
   press_token_.emplace(press_button_impl_());
 }

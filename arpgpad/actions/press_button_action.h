@@ -12,8 +12,8 @@ class PressButtonAction : public Action {
 
   // |distance| is fraction of the vertical screen height
   PressButtonAction(InputHandler* input_handler, ScopedKeyboard* key_board,
-                    PressButtonImpl press_button_impl, bool no_move = false,
-                    float distance = 0.0);
+                    bool no_move, float distance,
+                    PressButtonImpl press_button_impl);
   ~PressButtonAction() override;
 
   // Action implementation:
@@ -23,9 +23,9 @@ class PressButtonAction : public Action {
  private:
   InputHandler* const input_handler_;
   ScopedKeyboard* const keyboard_;
-  const PressButtonImpl press_button_impl_;
   const bool no_move_;
   const float distance_;
+  const PressButtonImpl press_button_impl_;
 
   std::optional<ScopedDestructor> press_token_;
   std::optional<ScopedDestructor> move_override_token_;

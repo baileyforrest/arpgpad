@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "action.h"
+#include "config.h"
 #include "controller.h"
 #include "scoped_keyboard.h"
 #include "scoped_mouse.h"
@@ -13,11 +14,7 @@
 
 class InputHandler : public Controller::Delegate {
  public:
-  struct Params {
-    float move_radius = 0;
-    float middle_offset = 0;
-  };
-  InputHandler(ScopedMouse* mouse, const Params& params);
+  InputHandler(ScopedMouse* mouse, const Config& config);
   ~InputHandler();
 
   void Poll();

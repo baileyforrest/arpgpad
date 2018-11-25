@@ -8,19 +8,24 @@
 
 namespace {
 
-// TODO: tune these values
-constexpr float kLStickThreshold = 0.25f;
-constexpr float kRStickThreshold = 0.16f;
-constexpr float kTriggerThreshold = 0.10f;
+// TODO: Possibly make configurable.
+constexpr float kLStickThreshold = 0.1f;
+constexpr float kRStickThreshold = 0.1f;
+constexpr float kTriggerThreshold = 0.1f;
+constexpr float kCursorMoveSpeedSlowMult = 1.0f;
+constexpr float kCursorMoveSpeedFastMult = 2.0f;
 
 }  // namespace
 
-InputHandler::InputHandler(ScopedMouse* mouse, const Params& params)
-    : move_radius_(params.move_radius),
-      middle_(screen_width_ / 2.0f, screen_height_ * params.middle_offset),
+InputHandler::InputHandler(ScopedMouse* mouse, const Config& config)
+    : move_radius_(config.move_radius_fraction),
+      middle_(screen_width_ / 2.0f,
+              screen_height_ * config.middle_offset_fraction),
       mouse_(mouse) {
-  assert(params.move_radius > 0.0f);
-  assert(params.middle_offset > 0.0f && params.middle_offset < 1.0f);
+  assert(config.move_radius_fraction > 0.0f &&
+         config.move_radius_fraction < 1.0f);
+  assert(config.middle_offset_fraction > 0.0f &&
+         config.middle_offset_fraction < 1.0f);
 }
 InputHandler::~InputHandler() = default;
 
@@ -145,13 +150,10 @@ void InputHandler::HandleRStick(const Controller::State& state) {
   float velocity = (std::pow(16.0f, magnitude) - 1) / 16;
 
   // Left trigger controls cursor speed.
-  if (state.ltrigger > kTriggerThreshold) {
-    // TODO: Should be configurable.
-    velocity *= screen_height_ * 2.0f;
-  } else {
-    // TODO: Should be configurable.
-    velocity *= screen_height_ * 1.0f;
-  }
+  float multiplier = state.ltrigger > kTriggerThreshold
+                         ? kCursorMoveSpeedFastMult
+                         : kCursorMoveSpeedSlowMult;
+  velocity *= screen_height_ * multiplier;
 
   cursor_mouse_velocity_ = rstick.Normal().Scale(velocity);
 
