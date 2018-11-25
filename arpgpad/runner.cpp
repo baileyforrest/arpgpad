@@ -45,7 +45,7 @@ Config PathOfExileConfig() {
       Controller::kButtonY, BA::MouseAction(Mouse::kButtonX2));  // Forward
   config.button_to_action.emplace(
       Controller::kButtonB,
-      BA::MouseAction(Mouse::kButtonX1, false, 0.3f));  // Back
+      BA::MouseAction(Mouse::kButtonX1, true, 0.48f));  // Back
 
   return config;
 }
@@ -80,8 +80,9 @@ bool Runner::Init() {
       case ButtonAction::Type::kMouse: {
         Mouse::Button mouse_button = button_action.code.mouse_button;
         action = std::make_unique<PressButtonAction>(
-            &input_handler_.value(), &keyboard_, button_action.no_move,
-            button_action.distance_fraction, [this, mouse_button] {
+            &input_handler_.value(), &keyboard_, *config_,
+            button_action.no_move, button_action.distance_fraction,
+            [this, mouse_button] {
               return mouse_.GetMousePressToken(mouse_button);
             });
         break;
@@ -89,8 +90,8 @@ bool Runner::Init() {
       case ButtonAction::Type::kKeyboard: {
         Keyboard::KeyCode key_code = button_action.code.key_code;
         action = std::make_unique<PressButtonAction>(
-            &input_handler_.value(), &keyboard_, button_action.no_move,
-            button_action.distance_fraction,
+            &input_handler_.value(), &keyboard_, *config_,
+            button_action.no_move, button_action.distance_fraction,
             [this, key_code] { return keyboard_.GetKeyPressToken(key_code); });
         break;
       }
@@ -110,4 +111,7 @@ bool Runner::Init() {
 void Runner::Poll() {
   input_handler_->Poll();
   controller_provider_xinput_.PollControllers();
+  for (const auto& action : actions_) {
+    action->Poll();
+  }
 }

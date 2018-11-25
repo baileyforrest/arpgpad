@@ -6,4 +6,5 @@ class Action {
 
   virtual void OnActivated() = 0;
   virtual void OnDeactivated() = 0;
+  virtual void Poll() {}
 };

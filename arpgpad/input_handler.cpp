@@ -10,8 +10,8 @@
 namespace {
 
 // TODO: Possibly make configurable.
-constexpr float kLStickThreshold = 0.1f;
-constexpr float kRStickThreshold = 0.1f;
+constexpr float kLStickThreshold = 0.15f;
+constexpr float kRStickThreshold = 0.15f;
 constexpr float kTriggerThreshold = 0.1f;
 constexpr float kCursorMoveSpeedSlowMult = 1.0f;
 constexpr float kCursorMoveSpeedFastMult = 2.0f;
@@ -147,12 +147,6 @@ void InputHandler::HandleLStick(const Controller::State& state) {
   direction_.y() *= -1.0f;
   RefreshMoveMousePosition();
 
-  auto now = std::chrono::steady_clock::now();
-  auto test = now + start_move_delay_;
-  LOG(ERR) << "FOO " << now.time_since_epoch().count() << " "
-           << test.time_since_epoch().count() << " "
-           << start_move_delay_.count();
-
   pending_start_move_time_ =
       std::chrono::steady_clock::now() + start_move_delay_;
 }
@@ -187,12 +181,15 @@ void InputHandler::RefreshMoveMousePosition() {
   // Apply perspective. This is needed so the distance from the character in
   // game is normalized.
   // TODO: Pass this into the class. See if we can use one value.
+  // TODO: Remove if this is no longer used.
   FloatVec2 perspective_direction = direction_.Scale(radius);
+#if 0
   if (perspective_direction.y() < 0) {
     perspective_direction.y() *= 0.8f;
   } else {
     perspective_direction.y() *= 1.1f;
   }
+#endif
 
   FloatVec2 target = middle_ + perspective_direction;
 
