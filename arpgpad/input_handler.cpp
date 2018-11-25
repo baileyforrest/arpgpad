@@ -18,7 +18,7 @@ constexpr float kTriggerThreshold = 0.10f;
 InputHandler::InputHandler(Keyboard* keyboard, Mouse* mouse, float move_radius,
                            float middle_offset)
     : move_radius_(move_radius),
-      middle_offset_(middle_offset),
+      middle_(screen_width_ / 2.0f, screen_height_ * middle_offset),
       keyboard_(keyboard),
       mouse_(mouse) {}
 InputHandler::~InputHandler() = default;
@@ -47,6 +47,23 @@ ScopedDestructor InputHandler::OverrideRadius(float radius) {
                          return radius_override.id == id;
                        }),
         id_to_mouse_radius_override_.end());
+  });
+}
+
+ScopedDestructor InputHandler::OverrideMove() {
+  if (++move_override_count_ == 1) {
+    if (is_moving_) {
+      left_mouse_click_token_.reset();
+    }
+  }
+
+  return ScopedDestructor([this] {
+    if (--move_override_count_ == 0) {
+      if (is_moving_) {
+        left_mouse_click_token_.emplace(
+            mouse_.GetMousePressToken(Mouse::kButtonLeft));
+      }
+    }
   });
 }
 
@@ -107,6 +124,10 @@ void InputHandler::HandleLStick(const Controller::State& state) {
 
   direction_ = lstick.Normal();
   RefreshMoveMousePosition();
+  if (move_override_count_ == 0 && !left_mouse_click_token_) {
+    left_mouse_click_token_.emplace(
+        mouse_.GetMousePressToken(Mouse::kButtonLeft));
+  }
 }
 
 void InputHandler::HandleRStick(const Controller::State& state) {
@@ -146,8 +167,10 @@ void InputHandler::RefreshMoveMousePosition() {
     perspective_direction.y() *= 1.1f;
   }
 
-  mouse_.SetCursorPos(static_cast<int>(perspective_direction.x()),
-                      static_cast<int>(perspective_direction.y()));
+  FloatVec2 target = middle_ + perspective_direction;
+
+  mouse_.SetCursorPos(static_cast<int>(target.x()),
+                      static_cast<int>(target.y()));
 }
 
 void InputHandler::RefreshCursorMousePosition(SteadyTimePoint now) {

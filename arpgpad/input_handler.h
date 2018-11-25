@@ -21,6 +21,7 @@ class InputHandler : public Controller::Delegate {
 
   void RegisterAction(Controller::Button button, Action* action);
   ScopedDestructor OverrideRadius(float radius);
+  ScopedDestructor OverrideMove();
 
  private:
   using SteadyTimePoint = std::chrono::time_point<std::chrono::steady_clock>;
@@ -36,7 +37,7 @@ class InputHandler : public Controller::Delegate {
   const int screen_width_ = 2560;
   const int screen_height_ = 1440;
   const float move_radius_;
-  const float middle_offset_;
+  const FloatVec2 middle_;
 
   ScopedKeyboard keyboard_;
   ScopedMouse mouse_;
@@ -51,6 +52,7 @@ class InputHandler : public Controller::Delegate {
   std::map<Controller::Button, ActionState> button_to_action_;
 
   bool is_moving_ = false;
+  int move_override_count_ = 0;
 
   std::optional<ScopedDestructor> left_mouse_click_token_;
 
