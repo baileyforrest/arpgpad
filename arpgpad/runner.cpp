@@ -50,6 +50,37 @@ Config PathOfExileConfig() {
   return config;
 }
 
+Config Diablo3Config() {
+  Config config;
+  config.move_radius_fraction = 0.15f;
+  config.middle_offset_fraction = 0.44f;
+  config.mouse_position_delay_ms = 10;
+
+  using BA = Config::ButtonAction;
+
+  config.button_to_action.emplace(Controller::kButtonBack,
+                                  BA::KeyAction(VK_ESCAPE));
+  config.button_to_action.emplace(Controller::kButtonStart, BA::KeyAction(VK_TAB));
+
+  // Mouse
+  config.button_to_action.emplace(Controller::kButtonA,
+                                  BA::MouseAction(Mouse::kButtonLeft, true));
+  config.button_to_action.emplace(Controller::kButtonX,
+                                  BA::MouseAction(Mouse::kButtonRight));
+
+  // Attacks
+  config.button_to_action.emplace(Controller::kButtonB, BA::KeyAction('3'));
+  config.button_to_action.emplace(Controller::kButtonY, BA::KeyAction('2'));
+  config.button_to_action.emplace(Controller::kButtonRb, BA::KeyAction('4'));
+
+  config.button_to_action.emplace(Controller::kButtonDpadUp,
+                                  BA::KeyAction('Q'));
+  config.button_to_action.emplace(Controller::kButtonDpadRight,
+                                  BA::KeyAction('1'));
+
+  return config;
+}
+
 }  // namespace
 
 Runner::Runner()
@@ -65,7 +96,11 @@ bool Runner::Init() {
     return false;
   }
 
+#if 0
   config_ = PathOfExileConfig();
+#else
+  config_ = Diablo3Config();
+#endif
 
   input_handler_.emplace(&display_, &mouse_, *config_);
   controllers[0]->SetDelegate(&input_handler_.value());
