@@ -1,0 +1,3 @@
+[submodule "arpgpad/third_party/cpptoml"]
+	path = arpgpad/third_party/cpptoml
+	url = https://github.com/skystrife/cpptoml.git
