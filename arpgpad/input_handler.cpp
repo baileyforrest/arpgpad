@@ -53,6 +53,16 @@ void InputHandler::RegisterAction(Controller::Button button, Action* action) {
   assert(ret.second);
 }
 
+void InputHandler::DeregisterAction(Action* action) {
+  for (auto it = button_to_action_.begin(); it != button_to_action_.end();) {
+    if (it->second.action == action) {
+      it = button_to_action_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
 ScopedDestructor InputHandler::OverrideMoveRadius(float radius) {
   uint64_t id = next_radius_override_id_++;
   id_to_mouse_radius_override_.push_back(MouseRadiusOverride{id, radius});

@@ -15,6 +15,14 @@ bool Runner::LoadConfig(const Config& config) {
     LOG(ERR) << "No controllers";
     return false;
   }
+
+  // Clear old state.
+  for (const auto& action : actions_) {
+    input_handler_->DeregisterAction(action.get());
+  }
+  actions_.clear();
+  input_handler_.reset();
+
   config_ = config;
 
   using ButtonAction = Config::ButtonAction;

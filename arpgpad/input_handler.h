@@ -26,6 +26,8 @@ class InputHandler : public Controller::Delegate {
   void Poll();
 
   void RegisterAction(Controller::Button button, Action* action);
+  void DeregisterAction(Action* action);
+
   ScopedDestructor OverrideMoveRadius(float radius);
   ScopedDestructor OverrideMove();
 
