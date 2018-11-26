@@ -76,6 +76,7 @@ ScopedDestructor InputHandler::OverrideMoveRadius(float radius) {
                          return radius_override.id == id;
                        }),
         id_to_mouse_radius_override_.end());
+    RefreshMoveMousePosition();
   });
 }
 

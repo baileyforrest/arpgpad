@@ -95,9 +95,11 @@ Config Diablo3Config() {
 // static
 std::optional<Config> ConfigReader::ParseConfig(std::istream* stream) {
   cpptoml::parser parser(*stream);
-  auto parsed = parser.parse();
-  if (!parsed) {
-    LOG(ERR) << "Failed to parse config as TOML";
+  std::shared_ptr<cpptoml::table> parsed;
+  try {
+    parsed = parser.parse();
+  } catch (cpptoml::parse_exception& e) {
+    LOG(ERR) << "Failed to parse config as TOML: '" << e.what() << "'";
     return std::nullopt;
   }
 
@@ -166,6 +168,7 @@ std::optional<Config> ConfigReader::ParseConfig(std::istream* stream) {
         LOG(ERR) << "Failed to parse button: " << *code;
         return std::nullopt;
       }
+      LOG(ERR) << "FOO " << *button << " " << *code;
       ba.code.mouse_button = *button;
     } else if (*type == "KEY") {
       ba.type = BA::Type::kKeyboard;
@@ -269,6 +272,7 @@ bool ConfigReader::Reload() {
     auto config = ParseConfig(&ifs);
     if (!config) {
       LOG(INFO) << "Could not parse config " << path;
+      continue;
     }
 
     LOG(INFO) << "Loaded config: " << config->name;

@@ -33,7 +33,7 @@ const struct {
 // static
 const char* Controller::ButtonToString(Button button) {
   for (const auto& item : kStringToButton) {
-    if (button = item.button) {
+    if (button == item.button) {
       return item.string;
     }
   }

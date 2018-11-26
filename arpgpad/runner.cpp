@@ -62,6 +62,7 @@ bool Runner::LoadConfig(const Config& config) {
     actions_.push_back(std::move(action));
   }
 
+  LOG(INFO) << "Enabled config: " << config_->name;
   return true;
 }
 

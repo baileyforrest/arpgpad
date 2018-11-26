@@ -24,7 +24,7 @@ const struct {
 // static
 const char* Mouse::ButtonToString(Button button) {
   for (const auto& item : kStringToButton) {
-    if (button = item.button) {
+    if (button == item.button) {
       return item.string;
     }
   }
@@ -35,7 +35,7 @@ const char* Mouse::ButtonToString(Button button) {
 
 // static
 std::optional<Mouse::Button> Mouse::StringToButton(const std::string& string) {
-  for (auto& item : kStringToButton) {
+  for (const auto& item : kStringToButton) {
     if (item.string == string) {
       return item.button;
     }
