@@ -2,12 +2,15 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "controller.h"
 #include "keyboard.h"
 #include "mouse.h"
 
 struct Config {
+  std::string name;
+
   // Fraction of vertical screen resolution to use for movement distance.
   float move_radius_fraction = 0.0;
 

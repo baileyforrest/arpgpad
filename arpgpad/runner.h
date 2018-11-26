@@ -16,7 +16,7 @@ class Runner {
   Runner();
   ~Runner();
 
-  bool Init();
+  bool LoadConfig(const Config& config);
   void Poll();
 
  private:

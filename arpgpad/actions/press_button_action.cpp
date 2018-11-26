@@ -16,11 +16,7 @@ PressButtonAction::PressButtonAction(InputHandler* input_handler,
   assert(distance >= 0.0f && distance <= 1.0f);
 }
 
-PressButtonAction::~PressButtonAction() {
-  assert(!press_token_);
-  assert(!move_override_token_);
-  assert(!shift_key_token_);
-}
+PressButtonAction::~PressButtonAction() {}
 
 void PressButtonAction::OnActivated() {
   if (no_move_) {
