@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <optional>
 
 #include "vec2.h"
 
@@ -46,7 +47,8 @@ class Controller {
     ~Delegate() = default;
   };
 
-  static const char* ButtonString(Button b);
+  static const char* ButtonToString(Button button);
+  static std::optional<Button> StringToButton(const std::string& string);
 
   virtual void SetDelegate(Delegate* d) = 0;
 

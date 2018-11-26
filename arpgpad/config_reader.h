@@ -3,14 +3,14 @@
 #include <filesystem>
 #include <iostream>
 #include <optional>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "config.h"
 
 class ConfigReader {
  public:
-  static std::optional<Config> ParseConfig(std::istream* config);
+  static std::optional<Config> ParseConfig(std::istream* stream);
 
   explicit ConfigReader(const std::filesystem::path& directory);
   ~ConfigReader();
@@ -22,7 +22,6 @@ class ConfigReader {
   }
 
  private:
-
   const std::filesystem::path directory_;
   std::map<std::string, Config> name_to_config_;
 };

@@ -19,6 +19,15 @@
     <Filter Include="Source Files\actions">
       <UniqueIdentifier>{3a397c4b-77cd-4b02-9866-115bc0c7fcd3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\third_party">
+      <UniqueIdentifier>{9b4b8716-53f7-4853-87de-ee2569cbe13f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\third_party\cpptoml">
+      <UniqueIdentifier>{4ac8887f-7555-4dae-b39f-93493e120ad6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\third_party\cpptoml\include">
+      <UniqueIdentifier>{ab942d06-78d2-4798-8709-4273e91ec084}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -92,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="config_reader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\cpptoml\include\cpptoml.h">
+      <Filter>Header Files\third_party\cpptoml\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

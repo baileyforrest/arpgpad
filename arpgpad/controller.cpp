@@ -4,40 +4,54 @@
 
 #include "controller.h"
 
+namespace {
+
+// clang-format off
+const struct {
+  const char* string;
+  Controller::Button button;
+} kStringToButton[] = {
+    {"A", Controller::kButtonA},
+    {"B", Controller::kButtonB},
+    {"X", Controller::kButtonX},
+    {"Y", Controller::kButtonY},
+    {"LB", Controller::kButtonLb},
+    {"RB", Controller::kButtonRb},
+    {"BACK", Controller::kButtonBack},
+    {"START", Controller::kButtonStart},
+    {"LSTICK", Controller::kButtonLStick},
+    {"RSTICK", Controller::kButtonRStick},
+    {"DPAD_UP", Controller::kButtonDpadUp},
+    {"DPAD_DOWN", Controller::kButtonDpadDown},
+    {"DPAD_LEFT", Controller::kButtonDpadLeft},
+    {"DPAD_RIGHT", Controller::kButtonDpadRight},
+};
+// clang-format on
+
+}  // namespace
+
 // static
-const char* Controller::ButtonString(Button b) {
-  switch (b) {
-    case kButtonA:
-      return "A";
-    case kButtonB:
-      return "B";
-    case kButtonX:
-      return "X";
-    case kButtonY:
-      return "Y";
-    case kButtonLb:
-      return "LB";
-    case kButtonRb:
-      return "RB";
-    case kButtonBack:
-      return "BACK";
-    case kButtonStart:
-      return "START";
-    case kButtonLStick:
-      return "LSTICK";
-    case kButtonRStick:
-      return "RSTICK";
-    case kButtonDpadUp:
-      return "DPAD_UP";
-    case kButtonDpadDown:
-      return "DPAD_DOWN";
-    case kButtonDpadLeft:
-      return "DPAD_LEFT";
-    case kButtonDpadRight:
-      return "DPAD_RIGHT";
+const char* Controller::ButtonToString(Button button) {
+  for (const auto& item : kStringToButton) {
+    if (button = item.button) {
+      return item.string;
+    }
   }
+
   assert(false);
   return "";
+}
+
+// static
+std::optional<Controller::Button> Controller::StringToButton(
+    const std::string& string) {
+  for (auto& item : kStringToButton) {
+    if (item.string == string) {
+      return item.button;
+    }
+  }
+
+  return std::nullopt;
 }
 
 std::ostream& operator<<(std::ostream& stream, const Controller::State& state) {
@@ -53,7 +67,7 @@ std::ostream& operator<<(std::ostream& stream, const Controller::State& state) {
   for (int button = 1; button < Controller::kButtonMaxButton; button <<= 1) {
     if (state.buttons & button) {
       stream << " "
-             << Controller::ButtonString(
+             << Controller::ButtonToString(
                     static_cast<Controller::Button>(button));
     }
   }

@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "log.h"
+#include "third_party/cpptoml/include/cpptoml.h"
 
 namespace {
 
@@ -92,8 +93,153 @@ Config Diablo3Config() {
 }  // namespace
 
 // static
-std::optional<Config> ConfigReader::ParseConfig(std::istream* config) {
-  return PathOfExileConfig();
+std::optional<Config> ConfigReader::ParseConfig(std::istream* stream) {
+  cpptoml::parser parser(*stream);
+  auto parsed = parser.parse();
+  if (!parsed) {
+    LOG(ERR) << "Failed to parse config as TOML";
+    return std::nullopt;
+  }
+
+  Config ret;
+
+  auto name = parsed->get_as<std::string>("name");
+  if (!name) {
+    LOG(ERR) << "Missing field: name";
+    return std::nullopt;
+  }
+  ret.name = *name;
+
+  auto move_radius_fraction = parsed->get_as<double>("move_radius_fraction");
+  if (!move_radius_fraction) {
+    LOG(ERR) << "Missing field: move_radius_fraction";
+    return std::nullopt;
+  }
+  if (*move_radius_fraction <= 0.0f || *move_radius_fraction > 0.4f) {
+    LOG(ERR) << "Out of range: move_radius_fraction";
+    return std::nullopt;
+  }
+  ret.move_radius_fraction = static_cast<float>(*move_radius_fraction);
+
+  auto middle_offset_fraction =
+      parsed->get_as<double>("middle_offset_fraction");
+  if (!middle_offset_fraction) {
+    LOG(ERR) << "Missing field: middle_offset_fraction";
+    return std::nullopt;
+  }
+  if (*middle_offset_fraction < 0.2f || *middle_offset_fraction > 0.8f) {
+    LOG(ERR) << "Out of range: middle_offset_fraction";
+    return std::nullopt;
+  }
+  ret.middle_offset_fraction = static_cast<float>(*middle_offset_fraction);
+
+  auto mouse_position_delay_ms = parsed->get_as<int>("mouse_position_delay_ms");
+  if (!mouse_position_delay_ms) {
+    LOG(ERR) << "Missing field: mouse_position_delay_ms";
+    return std::nullopt;
+  }
+  if (*mouse_position_delay_ms < 0) {
+    LOG(ERR) << "Out of range: mouse_position_delay_ms";
+    return std::nullopt;
+  }
+  ret.mouse_position_delay_ms = static_cast<int>(*mouse_position_delay_ms);
+
+  using BA = Config::ButtonAction;
+  auto parse_button_action =
+      [](const cpptoml::table& table) -> std::optional<BA> {
+    BA ba;
+    auto type = table.get_as<std::string>("type");
+    if (!type) {
+      LOG(ERR) << "Missing field: type";
+      return std::nullopt;
+    }
+    auto code = table.get_as<std::string>("code");
+    if (!code) {
+      LOG(ERR) << "Missing field: code";
+      return std::nullopt;
+    }
+
+    if (*type == "MOUSE") {
+      ba.type = BA::Type::kMouse;
+      auto button = Mouse::StringToButton(*code);
+      if (!button) {
+        LOG(ERR) << "Failed to parse button: " << *code;
+        return std::nullopt;
+      }
+      ba.code.mouse_button = *button;
+    } else if (*type == "KEY") {
+      ba.type = BA::Type::kKeyboard;
+      auto key = Keyboard::ParseKeyCode(*code);
+      if (!key) {
+        LOG(ERR) << "Failed to parse key: " << *code;
+        return std::nullopt;
+      }
+      ba.code.key_code = *key;
+    } else {
+      LOG(ERR) << "Unknown type: " << *type;
+      return std::nullopt;
+    }
+
+    if (auto no_move = table.get_as<bool>("no_move")) {
+      ba.no_move = *no_move;
+    }
+
+    if (auto distance_fraction = table.get_as<double>("distance_fraction")) {
+      if (*distance_fraction <= 0.0f || *distance_fraction >= 1.0f) {
+        LOG(ERR) << "Invalid value for distance_fraction: "
+                 << *distance_fraction;
+        return std::nullopt;
+      }
+      ba.distance_fraction = static_cast<float>(*distance_fraction);
+    }
+
+    return ba;
+  };
+
+  auto move_command = parsed->get_table("move_command");
+  if (!move_command) {
+    LOG(ERR) << "Missing field: move_command";
+    return std::nullopt;
+  }
+
+  auto move_ba = parse_button_action(*move_command);
+  if (!move_ba) {
+    return std::nullopt;  // Error logged.
+  }
+
+  auto button_to_action = parsed->get_table_array("button_to_action");
+  if (!button_to_action) {
+    LOG(ERR) << "Missing field: button_to_action";
+    return std::nullopt;
+  }
+
+  for (const auto& table : *button_to_action) {
+    auto button = table->get_as<std::string>("button");
+    if (!button) {
+      LOG(ERR) << "Missing field: button";
+      return std::nullopt;
+    }
+
+    auto parsed_button = Controller::StringToButton(*button);
+    if (!parsed_button) {
+      LOG(ERR) << "Failed to parse button: " << *button;
+    }
+
+    auto action = table->get_table("action");
+    if (!action) {
+      LOG(ERR) << "Missing field: action";
+      return std::nullopt;
+    }
+
+    auto ba = parse_button_action(*action);
+    if (!ba) {
+      return std::nullopt;  // Error logged.
+    }
+
+    ret.button_to_action.emplace(*parsed_button, *ba);
+  }
+
+  return ret;
 }
 
 ConfigReader::ConfigReader(const std::filesystem::path& directory)

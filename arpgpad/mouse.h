@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
 
 class Mouse {
  public:
@@ -18,7 +19,8 @@ class Mouse {
     kButtonNumTypes,
   };
 
-  static const char* ButtonString(Button button);
+  static const char* ButtonToString(Button button);
+  static std::optional<Button> StringToButton(const std::string& string);
 
   virtual std::pair<int, int> GetCursorPos() = 0;
   virtual void SetCursorPos(int x, int y) = 0;
@@ -28,6 +30,6 @@ class Mouse {
 };
 
 inline std::ostream& operator<<(std::ostream& os, Mouse::Button button) {
-  os << Mouse::ButtonString(button);
+  os << Mouse::ButtonToString(button);
   return os;
 }
