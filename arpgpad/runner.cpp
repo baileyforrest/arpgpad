@@ -100,7 +100,7 @@ bool Runner::Init() {
     return false;
   }
 
-#if 0
+#if 1
   config_ = PathOfExileConfig();
 #else
   config_ = Diablo3Config();

@@ -171,6 +171,7 @@
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="logging_controller_delegate.h" />
+    <ClInclude Include="macros.h" />
     <ClInclude Include="mouse.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="runner.h" />
