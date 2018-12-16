@@ -168,7 +168,6 @@ std::optional<Config> ConfigReader::ParseConfig(std::istream* stream) {
         LOG(ERR) << "Failed to parse button: " << *code;
         return std::nullopt;
       }
-      LOG(ERR) << "FOO " << *button << " " << *code;
       ba.code.mouse_button = *button;
     } else if (*type == "KEY") {
       ba.type = BA::Type::kKeyboard;
